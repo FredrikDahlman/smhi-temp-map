@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,32 +52,38 @@ public class SmhiClient {
 
         try {
             JsonNode root = objectMapper.readTree(json);
-            JsonNode station = root.get("station");
+            JsonNode stations = root.get("station");
 
-            if (station != null && station.isArray()) {
-                for (JsonNode stationNode : station) {
-                    String stationId = stationNode.has("id") ? stationNode.get("id").asText() : null;
+            if (stations != null && stations.isArray()) {
+                for (JsonNode stationNode : stations) {
+                    String stationId = stationNode.has("key") ? stationNode.get("key").asText() : null;
                     String name = stationNode.has("name") ? stationNode.get("name").asText() : null;
                     Double latitude = stationNode.has("latitude") ? stationNode.get("latitude").asDouble() : null;
                     Double longitude = stationNode.has("longitude") ? stationNode.get("longitude").asDouble() : null;
 
-                    JsonNode data = stationNode.get("data");
-                    if (data != null && data.isArray()) {
-                        for (JsonNode dataNode : data) {
+                    JsonNode values = stationNode.get("value");
+                    if (values != null && values.isArray() && values.size() > 0) {
+                        JsonNode valueNode = values.get(0);
+                        if (valueNode != null) {
                             Double temperature = null;
-                            String dateTime = null;
+                            Long dateMillis = null;
 
-                            JsonNode value = dataNode.get("value");
-                            if (value != null && !value.isNull()) {
-                                temperature = value.asDouble();
+                            JsonNode tempValue = valueNode.get("value");
+                            if (tempValue != null && !tempValue.isNull()) {
+                                try {
+                                    temperature = Double.parseDouble(tempValue.asText());
+                                } catch (NumberFormatException e) {
+                                    LOG.debugf("Could not parse temperature: %s", tempValue.asText());
+                                }
                             }
 
-                            JsonNode date = dataNode.get("date");
-                            if (date != null) {
-                                dateTime = date.asText();
+                            JsonNode date = valueNode.get("date");
+                            if (date != null && !date.isNull()) {
+                                dateMillis = date.asLong();
                             }
 
-                            if (stationId != null && temperature != null && dateTime != null) {
+                            if (stationId != null && temperature != null && dateMillis != null) {
+                                String dateTime = Instant.ofEpochMilli(dateMillis).toString();
                                 results.add(new SmhiStationData(stationId, name, latitude, longitude, temperature, dateTime));
                             }
                         }
