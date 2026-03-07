@@ -17,8 +17,8 @@ public class ReadingRepository implements ReadingPort {
     public List<ReadingModel> findLatestByStation() {
         List<com.github.fredrikdahlman.tempmap.entity.ReadingEntity> entities = entityManager
             .createQuery(
-                "SELECT r FROM com.github.fredrikdahlman.tempmap.entity.ReadingEntity r WHERE r.timestamp IN " +
-                "(SELECT MAX(r2.timestamp) FROM com.github.fredrikdahlman.tempmap.entity.ReadingEntity r2 GROUP BY r2.station.id)",
+                "SELECT r FROM com.github.fredrikdahlman.tempmap.entity.ReadingEntity r WHERE r.timestamp = " +
+                "(SELECT MAX(r2.timestamp) FROM com.github.fredrikdahlman.tempmap.entity.ReadingEntity r2 WHERE r2.station.id = r.station.id)",
                 com.github.fredrikdahlman.tempmap.entity.ReadingEntity.class
             )
             .getResultList();

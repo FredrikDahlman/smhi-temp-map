@@ -42,9 +42,11 @@ public class SmhiClient implements WeatherDataPort {
             } else {
                 LOG.errorf("SMHI API returned status code: %d", response.statusCode());
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (InterruptedException e) {
             LOG.error("Failed to fetch SMHI data", e);
             Thread.currentThread().interrupt();
+        } catch (IOException e) {
+            LOG.error("Failed to fetch SMHI data", e);
         }
 
         return results;
