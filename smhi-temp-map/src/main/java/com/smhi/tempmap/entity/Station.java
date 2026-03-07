@@ -29,6 +29,27 @@ public class Station extends PanacheEntityBase {
     @Column(nullable = false)
     public Double longitude;
 
+    public com.smhi.tempmap.domain.model.Station toDomain() {
+        return new com.smhi.tempmap.domain.model.Station(
+            id, stationId, name, latitude, longitude
+        );
+    }
+
+    public static com.smhi.tempmap.domain.model.Station toDomain(Station entity) {
+        return entity != null ? entity.toDomain() : null;
+    }
+
+    public static Station fromDomain(com.smhi.tempmap.domain.model.Station domain) {
+        if (domain == null) return null;
+        Station entity = new Station();
+        entity.id = domain.id();
+        entity.stationId = domain.stationId();
+        entity.name = domain.name();
+        entity.latitude = domain.latitude();
+        entity.longitude = domain.longitude();
+        return entity;
+    }
+
     public static Station findByStationId(String stationId) {
         return find("stationId", stationId).firstResult();
     }

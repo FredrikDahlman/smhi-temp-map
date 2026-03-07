@@ -2,6 +2,8 @@ package com.smhi.tempmap.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smhi.tempmap.client.SmhiClient.SmhiStationData;
+import com.smhi.tempmap.ports.WeatherDataPort;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.jboss.logging.Logger;
 
@@ -15,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
-public class SmhiClient {
+public class SmhiClient implements WeatherDataPort {
 
     private static final Logger LOG = Logger.getLogger(SmhiClient.class);
     private static final String SMHI_API_URL = "https://opendata-download-metobs.smhi.se/api/version/1.0/parameter/1/station-set/all/period/latest-hour/data.json";
@@ -23,6 +25,7 @@ public class SmhiClient {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
+    @Override
     public List<SmhiStationData> fetchTemperatureData() {
         List<SmhiStationData> results = new ArrayList<>();
 

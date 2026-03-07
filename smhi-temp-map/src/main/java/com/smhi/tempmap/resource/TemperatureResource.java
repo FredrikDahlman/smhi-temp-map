@@ -1,10 +1,11 @@
 package com.smhi.tempmap.resource;
 
+import com.smhi.tempmap.domain.model.Reading;
+import com.smhi.tempmap.domain.model.Station;
+import com.smhi.tempmap.domain.service.TemperatureCommandService;
+import com.smhi.tempmap.domain.service.TemperatureQueryService;
 import com.smhi.tempmap.dto.StationDto;
 import com.smhi.tempmap.dto.TemperatureHistoryDto;
-import com.smhi.tempmap.entity.Reading;
-import com.smhi.tempmap.entity.Station;
-import com.smhi.tempmap.service.TemperatureService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
@@ -20,12 +21,15 @@ import java.util.stream.Collectors;
 public class TemperatureResource {
 
     @Inject
-    TemperatureService temperatureService;
+    TemperatureQueryService queryService;
+
+    @Inject
+    TemperatureCommandService commandService;
 
     @GET
     @Path("/stations")
     public List<StationDto> getAllStations() {
-        return temperatureService.getAllStations().stream()
+        return queryService.getAllStations().stream()
             .map(StationDto::from)
             .collect(Collectors.toList());
     }
@@ -33,9 +37,9 @@ public class TemperatureResource {
     @GET
     @Path("/temperatures/current")
     public List<StationDto> getCurrentTemperatures() {
-        List<Reading> readings = temperatureService.getCurrentTemperatures();
+        List<Reading> readings = queryService.getCurrentTemperatures();
         return readings.stream()
-            .map(r -> StationDto.from(r.station, r.temperature, r.timestamp.toString()))
+            .map(r -> StationDto.from(r.station(), r.temperature(), r.timestamp().toString()))
             .collect(Collectors.toList());
     }
 
@@ -43,11 +47,16 @@ public class TemperatureResource {
     @Path("/temperatures/{stationId}/history")
     public TemperatureHistoryDto getTemperatureHistory(
             @PathParam("stationId") Long stationId) {
-        Station station = Station.findById(stationId);
+        Station station = queryService.getAllStations().stream()
+            .filter(s -> s.id().equals(stationId))
+            .findFirst()
+            .orElse(null);
+        
         if (station == null) {
             throw new NotFoundException("Station not found: " + stationId);
         }
-        List<Reading> readings = temperatureService.getTemperatureHistory(stationId, 24);
-        return TemperatureHistoryDto.from(stationId, station.name, readings);
+        
+        List<Reading> readings = queryService.getTemperatureHistory(stationId, 24);
+        return TemperatureHistoryDto.from(stationId, station.name(), readings);
     }
 }

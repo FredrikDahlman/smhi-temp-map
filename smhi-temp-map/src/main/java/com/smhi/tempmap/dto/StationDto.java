@@ -1,6 +1,6 @@
 package com.smhi.tempmap.dto;
 
-import com.smhi.tempmap.entity.Station;
+import com.smhi.tempmap.domain.model.Station;
 
 public class StationDto {
     public Long id;
@@ -13,6 +13,16 @@ public class StationDto {
 
     public static StationDto from(Station station) {
         StationDto dto = new StationDto();
+        dto.id = station.id();
+        dto.stationId = station.stationId();
+        dto.name = station.name();
+        dto.latitude = station.latitude();
+        dto.longitude = station.longitude();
+        return dto;
+    }
+
+    public static StationDto from(com.smhi.tempmap.entity.Station station) {
+        StationDto dto = new StationDto();
         dto.id = station.id;
         dto.stationId = station.stationId;
         dto.name = station.name;
@@ -22,6 +32,13 @@ public class StationDto {
     }
 
     public static StationDto from(Station station, Double temperature, String timestamp) {
+        StationDto dto = from(station);
+        dto.temperature = temperature;
+        dto.timestamp = timestamp;
+        return dto;
+    }
+    
+    public static StationDto from(com.smhi.tempmap.entity.Station station, Double temperature, String timestamp) {
         StationDto dto = from(station);
         dto.temperature = temperature;
         dto.timestamp = timestamp;

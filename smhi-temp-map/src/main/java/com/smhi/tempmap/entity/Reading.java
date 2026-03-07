@@ -3,7 +3,6 @@ package com.smhi.tempmap.entity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,6 +29,23 @@ public class Reading extends PanacheEntityBase {
 
     @Column(nullable = false)
     public Instant timestamp;
+
+    public com.smhi.tempmap.domain.model.Reading toDomain() {
+        return new com.smhi.tempmap.domain.model.Reading(
+            id, 
+            station != null ? station.toDomain() : null, 
+            temperature, 
+            timestamp
+        );
+    }
+
+    public static com.smhi.tempmap.domain.model.Reading toDomain(Reading entity) {
+        return entity != null ? entity.toDomain() : null;
+    }
+
+    public static List<com.smhi.tempmap.domain.model.Reading> toDomainList(List<Reading> entities) {
+        return entities.stream().map(e -> e.toDomain()).toList();
+    }
 
     public static List<Reading> findByStationId(Long stationId) {
         return list("station.id = ?1", stationId);

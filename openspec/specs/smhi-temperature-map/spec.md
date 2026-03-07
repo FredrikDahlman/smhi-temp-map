@@ -36,6 +36,39 @@ A web application that collects temperature data from SMHI's open data API and p
 - SHALL use JUnit 5 for backend testing
 - SHALL enable CORS for frontend on localhost:3000
 
+### Architecture
+
+The backend follows a **clean architecture** pattern with clear layer separation:
+
+#### Layer Structure
+
+| Layer | Location | Purpose |
+|-------|----------|---------|
+| **domain/model** | `domain/model/*.java` | Pure domain objects (records) - no framework dependencies |
+| **domain/service** | `domain/service/*Service.java` | Business logic - uses ports (interfaces) |
+| **ports** | `ports/*Port.java` | Interface definitions - contracts between layers |
+| **adapters** | `adapters/persistence/*.java` | Implementations of ports |
+| **resource** | `resource/*Resource.java` | REST API handlers |
+| **dto** | `dto/*.java` | API request/response objects |
+| **entity** | `entity/*.java` | JPA entities - persistence only |
+
+#### Design Principles
+
+- **Dependency Flow**: Always points inward toward domain. Domain owns contracts (ports), adapters fulfill them.
+- **Ports First**: When adding features, define the port interface before implementation
+- **Query vs Command**: Separate read operations (QueryService) from write operations (CommandService)
+- **Domain Purity**: Domain models and services know nothing about persistence or HTTP
+
+#### Adding New Code
+
+When adding a new feature:
+
+1. Create domain model in `domain/model/` if needed
+2. Define port interface in `ports/`
+3. Implement adapter in `adapters/persistence/`
+4. Add business logic to appropriate service in `domain/service/`
+5. Expose via REST in `resource/`
+
 ## Data Model
 
 ### Station

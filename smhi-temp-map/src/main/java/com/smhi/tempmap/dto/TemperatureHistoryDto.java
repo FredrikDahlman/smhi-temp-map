@@ -1,7 +1,6 @@
 package com.smhi.tempmap.dto;
 
-import com.smhi.tempmap.entity.Reading;
-import java.time.Instant;
+import com.smhi.tempmap.domain.model.Reading;
 import java.util.List;
 
 public class TemperatureHistoryDto {
@@ -14,7 +13,7 @@ public class TemperatureHistoryDto {
         dto.stationId = stationId;
         dto.stationName = stationName;
         dto.readings = readings.stream()
-            .map(r -> new TemperaturePoint(r.temperature, r.timestamp.toString()))
+            .map(r -> new TemperaturePoint(r.temperature(), r.timestamp().toString()))
             .toList();
         return dto;
     }
