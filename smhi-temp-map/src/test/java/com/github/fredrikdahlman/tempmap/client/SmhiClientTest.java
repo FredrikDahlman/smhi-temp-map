@@ -14,14 +14,14 @@ class SmhiClientTest {
             {
                 "station": [
                     {
-                        "id": "123456",
+                        "key": "123456",
                         "name": "Test Station",
                         "latitude": 60.0,
                         "longitude": 15.0,
-                        "data": [
+                        "value": [
                             {
                                 "value": 5.5,
-                                "date": "2024-01-15T12:00:00Z"
+                                "date": 1705316400000
                             }
                         ]
                     }
@@ -46,18 +46,18 @@ class SmhiClientTest {
             {
                 "station": [
                     {
-                        "id": "111",
+                        "key": "111",
                         "name": "Station A",
                         "latitude": 60.0,
                         "longitude": 15.0,
-                        "data": [{"value": 10.0, "date": "2024-01-15T12:00:00Z"}]
+                        "value": [{"value": 10.0, "date": 1705316400000}]
                     },
                     {
-                        "id": "222",
+                        "key": "222",
                         "name": "Station B",
                         "latitude": 61.0,
                         "longitude": 16.0,
-                        "data": [{"value": 8.5, "date": "2024-01-15T12:00:00Z"}]
+                        "value": [{"value": 8.5, "date": 1705316400000}]
                     }
                 ]
             }

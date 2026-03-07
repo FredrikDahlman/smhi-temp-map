@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "stations")
-public class Station extends PanacheEntityBase {
+public class StationEntity extends PanacheEntityBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,19 +29,19 @@ public class Station extends PanacheEntityBase {
     @Column(nullable = false)
     public Double longitude;
 
-    public com.github.fredrikdahlman.tempmap.domain.model.Station toDomain() {
-        return new com.github.fredrikdahlman.tempmap.domain.model.Station(
+    public com.github.fredrikdahlman.tempmap.domain.model.StationModel toDomain() {
+        return new com.github.fredrikdahlman.tempmap.domain.model.StationModel(
             id, stationId, name, latitude, longitude
         );
     }
 
-    public static com.github.fredrikdahlman.tempmap.domain.model.Station toDomain(Station entity) {
+    public static com.github.fredrikdahlman.tempmap.domain.model.StationModel toDomain(StationEntity entity) {
         return entity != null ? entity.toDomain() : null;
     }
 
-    public static Station fromDomain(com.github.fredrikdahlman.tempmap.domain.model.Station domain) {
+    public static StationEntity fromDomain(com.github.fredrikdahlman.tempmap.domain.model.StationModel domain) {
         if (domain == null) return null;
-        Station entity = new Station();
+        StationEntity entity = new StationEntity();
         entity.id = domain.id();
         entity.stationId = domain.stationId();
         entity.name = domain.name();
@@ -50,11 +50,11 @@ public class Station extends PanacheEntityBase {
         return entity;
     }
 
-    public static Station findByStationId(String stationId) {
+    public static StationEntity findByStationId(String stationId) {
         return find("stationId", stationId).firstResult();
     }
 
-    public static List<Station> listAllStations() {
+    public static List<StationEntity> listAllStations() {
         return listAll();
     }
 }

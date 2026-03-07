@@ -1,6 +1,6 @@
 package com.github.fredrikdahlman.tempmap.adapters.persistence;
 
-import com.github.fredrikdahlman.tempmap.domain.model.Reading;
+import com.github.fredrikdahlman.tempmap.domain.model.ReadingModel;
 import com.github.fredrikdahlman.tempmap.ports.ReadingPort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -14,29 +14,29 @@ public class ReadingRepository implements ReadingPort {
     EntityManager entityManager;
     
     @Override
-    public List<Reading> findLatestByStation() {
-        List<com.github.fredrikdahlman.tempmap.entity.Reading> entities = entityManager
+    public List<ReadingModel> findLatestByStation() {
+        List<com.github.fredrikdahlman.tempmap.entity.ReadingEntity> entities = entityManager
             .createQuery(
-                "SELECT r FROM com.github.fredrikdahlman.tempmap.entity.Reading r WHERE r.timestamp IN " +
-                "(SELECT MAX(r2.timestamp) FROM com.github.fredrikdahlman.tempmap.entity.Reading r2 GROUP BY r2.station.id)",
-                com.github.fredrikdahlman.tempmap.entity.Reading.class
+                "SELECT r FROM com.github.fredrikdahlman.tempmap.entity.ReadingEntity r WHERE r.timestamp IN " +
+                "(SELECT MAX(r2.timestamp) FROM com.github.fredrikdahlman.tempmap.entity.ReadingEntity r2 GROUP BY r2.station.id)",
+                com.github.fredrikdahlman.tempmap.entity.ReadingEntity.class
             )
             .getResultList();
         return entities.stream().map(e -> e.toDomain()).toList();
     }
     
     @Override
-    public List<Reading> findByStation(Long stationId, int limit) {
-        List<com.github.fredrikdahlman.tempmap.entity.Reading> entities = 
-            com.github.fredrikdahlman.tempmap.entity.Reading.findRecentByStationId(stationId, limit);
+    public List<ReadingModel> findByStation(Long stationId, int limit) {
+        List<com.github.fredrikdahlman.tempmap.entity.ReadingEntity> entities = 
+            com.github.fredrikdahlman.tempmap.entity.ReadingEntity.findRecentByStationId(stationId, limit);
         return entities.stream().map(e -> e.toDomain()).toList();
     }
     
     @Override
-    public Reading save(Reading reading) {
+    public ReadingModel save(ReadingModel reading) {
         // Check if reading already exists for this station and timestamp
         Long stationId = reading.station().id();
-        var existing = com.github.fredrikdahlman.tempmap.entity.Reading.find(
+        var existing = com.github.fredrikdahlman.tempmap.entity.ReadingEntity.find(
             "station.id = ?1 and timestamp = ?2", 
             stationId, 
             reading.timestamp()
@@ -46,8 +46,8 @@ public class ReadingRepository implements ReadingPort {
             return null; // Already exists, skip
         }
         
-        com.github.fredrikdahlman.tempmap.entity.Reading entity = new com.github.fredrikdahlman.tempmap.entity.Reading();
-        entity.station = com.github.fredrikdahlman.tempmap.entity.Station.findById(reading.station().id());
+        com.github.fredrikdahlman.tempmap.entity.ReadingEntity entity = new com.github.fredrikdahlman.tempmap.entity.ReadingEntity();
+        entity.station = com.github.fredrikdahlman.tempmap.entity.StationEntity.findById(reading.station().id());
         entity.temperature = reading.temperature();
         entity.timestamp = reading.timestamp();
         entity.persist();

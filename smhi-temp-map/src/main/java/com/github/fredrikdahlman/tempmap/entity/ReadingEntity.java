@@ -14,7 +14,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "readings")
-public class Reading extends PanacheEntityBase {
+public class ReadingEntity extends PanacheEntityBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,7 @@ public class Reading extends PanacheEntityBase {
 
     @ManyToOne
     @JoinColumn(name = "station_id", nullable = false)
-    public Station station;
+    public StationEntity station;
 
     @Column(nullable = false)
     public Double temperature;
@@ -30,8 +30,8 @@ public class Reading extends PanacheEntityBase {
     @Column(nullable = false)
     public Instant timestamp;
 
-    public com.github.fredrikdahlman.tempmap.domain.model.Reading toDomain() {
-        return new com.github.fredrikdahlman.tempmap.domain.model.Reading(
+    public com.github.fredrikdahlman.tempmap.domain.model.ReadingModel toDomain() {
+        return new com.github.fredrikdahlman.tempmap.domain.model.ReadingModel(
             id, 
             station != null ? station.toDomain() : null, 
             temperature, 
@@ -39,19 +39,19 @@ public class Reading extends PanacheEntityBase {
         );
     }
 
-    public static com.github.fredrikdahlman.tempmap.domain.model.Reading toDomain(Reading entity) {
+    public static com.github.fredrikdahlman.tempmap.domain.model.ReadingModel toDomain(ReadingEntity entity) {
         return entity != null ? entity.toDomain() : null;
     }
 
-    public static List<com.github.fredrikdahlman.tempmap.domain.model.Reading> toDomainList(List<Reading> entities) {
+    public static List<com.github.fredrikdahlman.tempmap.domain.model.ReadingModel> toDomainList(List<ReadingEntity> entities) {
         return entities.stream().map(e -> e.toDomain()).toList();
     }
 
-    public static List<Reading> findByStationId(Long stationId) {
+    public static List<ReadingEntity> findByStationId(Long stationId) {
         return list("station.id = ?1", stationId);
     }
 
-    public static List<Reading> findRecentByStationId(Long stationId, int limit) {
+    public static List<ReadingEntity> findRecentByStationId(Long stationId, int limit) {
         return find("station.id = ?1 ORDER BY timestamp DESC", stationId).page(0, limit).list();
     }
 }

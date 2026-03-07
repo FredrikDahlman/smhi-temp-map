@@ -2,9 +2,9 @@ package com.github.fredrikdahlman.tempmap.domain.model;
 
 import java.time.Instant;
 
-public record Reading(
+public record ReadingModel(
     Long id,
-    Station station,
+    StationModel station,
     Double temperature,
     Instant timestamp
 ) {}

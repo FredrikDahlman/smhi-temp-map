@@ -1,7 +1,7 @@
 package com.github.fredrikdahlman.tempmap.domain.service;
 
-import com.github.fredrikdahlman.tempmap.domain.model.Reading;
-import com.github.fredrikdahlman.tempmap.domain.model.Station;
+import com.github.fredrikdahlman.tempmap.domain.model.ReadingModel;
+import com.github.fredrikdahlman.tempmap.domain.model.StationModel;
 import com.github.fredrikdahlman.tempmap.ports.ReadingPort;
 import com.github.fredrikdahlman.tempmap.ports.StationPort;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -20,15 +20,15 @@ public class TemperatureQueryService {
         this.readingPort = readingPort;
     }
     
-    public List<Station> getAllStations() {
+    public List<StationModel> getAllStations() {
         return stationPort.findAll();
     }
     
-    public List<Reading> getCurrentTemperatures() {
+    public List<ReadingModel> getCurrentTemperatures() {
         return readingPort.findLatestByStation();
     }
     
-    public List<Reading> getTemperatureHistory(Long stationId, int hours) {
+    public List<ReadingModel> getTemperatureHistory(Long stationId, int hours) {
         return readingPort.findByStation(stationId, hours);
     }
 }

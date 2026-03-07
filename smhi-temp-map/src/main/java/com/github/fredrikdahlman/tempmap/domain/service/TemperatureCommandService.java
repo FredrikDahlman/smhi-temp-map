@@ -1,7 +1,8 @@
 package com.github.fredrikdahlman.tempmap.domain.service;
 
 import com.github.fredrikdahlman.tempmap.client.SmhiClient.SmhiStationData;
-import com.github.fredrikdahlman.tempmap.domain.model.Station;
+import com.github.fredrikdahlman.tempmap.domain.model.StationModel;
+import com.github.fredrikdahlman.tempmap.domain.model.ReadingModel;
 import com.github.fredrikdahlman.tempmap.ports.ReadingPort;
 import com.github.fredrikdahlman.tempmap.ports.StationPort;
 import com.github.fredrikdahlman.tempmap.ports.WeatherDataPort;
@@ -44,11 +45,11 @@ public class TemperatureCommandService {
             
             for (SmhiStationData smhiData : data) {
                 try {
-                    Station station = stationPort.findByStationId(smhiData.stationId())
+                    StationModel station = stationPort.findByStationId(smhiData.stationId())
                         .orElseGet(() -> createStation(smhiData));
                     
-                    com.github.fredrikdahlman.tempmap.domain.model.Reading reading = 
-                        new com.github.fredrikdahlman.tempmap.domain.model.Reading(
+                    ReadingModel reading = 
+                        new ReadingModel(
                             null,
                             station,
                             smhiData.temperature(),
@@ -67,8 +68,8 @@ public class TemperatureCommandService {
         }
     }
     
-    private Station createStation(SmhiStationData data) {
-        Station station = new Station(
+    private StationModel createStation(SmhiStationData data) {
+        StationModel station = new StationModel(
             null,
             data.stationId(),
             data.name() != null ? data.name() : "Unknown",

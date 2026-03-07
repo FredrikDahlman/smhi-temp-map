@@ -1,7 +1,7 @@
 package com.github.fredrikdahlman.tempmap.resource;
 
-import com.github.fredrikdahlman.tempmap.domain.model.Reading;
-import com.github.fredrikdahlman.tempmap.domain.model.Station;
+import com.github.fredrikdahlman.tempmap.domain.model.ReadingModel;
+import com.github.fredrikdahlman.tempmap.domain.model.StationModel;
 import com.github.fredrikdahlman.tempmap.domain.service.TemperatureCommandService;
 import com.github.fredrikdahlman.tempmap.domain.service.TemperatureQueryService;
 import com.github.fredrikdahlman.tempmap.dto.StationDto;
@@ -37,7 +37,7 @@ public class TemperatureResource {
     @GET
     @Path("/temperatures/current")
     public List<StationDto> getCurrentTemperatures() {
-        List<Reading> readings = queryService.getCurrentTemperatures();
+        List<ReadingModel> readings = queryService.getCurrentTemperatures();
         return readings.stream()
             .map(r -> StationDto.from(r.station(), r.temperature(), r.timestamp().toString()))
             .collect(Collectors.toList());
@@ -47,7 +47,7 @@ public class TemperatureResource {
     @Path("/temperatures/{stationId}/history")
     public TemperatureHistoryDto getTemperatureHistory(
             @PathParam("stationId") Long stationId) {
-        Station station = queryService.getAllStations().stream()
+        StationModel station = queryService.getAllStations().stream()
             .filter(s -> s.id().equals(stationId))
             .findFirst()
             .orElse(null);
@@ -56,7 +56,7 @@ public class TemperatureResource {
             throw new NotFoundException("Station not found: " + stationId);
         }
         
-        List<Reading> readings = queryService.getTemperatureHistory(stationId, 24);
+        List<ReadingModel> readings = queryService.getTemperatureHistory(stationId, 24);
         return TemperatureHistoryDto.from(stationId, station.name(), readings);
     }
 }

@@ -1,6 +1,7 @@
 package com.github.fredrikdahlman.tempmap.dto;
 
-import com.github.fredrikdahlman.tempmap.domain.model.Station;
+import com.github.fredrikdahlman.tempmap.domain.model.StationModel;
+import com.github.fredrikdahlman.tempmap.entity.StationEntity;
 
 public class StationDto {
     public Long id;
@@ -11,7 +12,7 @@ public class StationDto {
     public Double temperature;
     public String timestamp;
 
-    public static StationDto from(Station station) {
+    public static StationDto from(StationModel station) {
         StationDto dto = new StationDto();
         dto.id = station.id();
         dto.stationId = station.stationId();
@@ -21,7 +22,7 @@ public class StationDto {
         return dto;
     }
 
-    public static StationDto from(com.github.fredrikdahlman.tempmap.entity.Station station) {
+    public static StationDto from(StationEntity station) {
         StationDto dto = new StationDto();
         dto.id = station.id;
         dto.stationId = station.stationId;
@@ -31,14 +32,14 @@ public class StationDto {
         return dto;
     }
 
-    public static StationDto from(Station station, Double temperature, String timestamp) {
+    public static StationDto from(StationModel station, Double temperature, String timestamp) {
         StationDto dto = from(station);
         dto.temperature = temperature;
         dto.timestamp = timestamp;
         return dto;
     }
     
-    public static StationDto from(com.github.fredrikdahlman.tempmap.entity.Station station, Double temperature, String timestamp) {
+    public static StationDto from(StationEntity station, Double temperature, String timestamp) {
         StationDto dto = from(station);
         dto.temperature = temperature;
         dto.timestamp = timestamp;

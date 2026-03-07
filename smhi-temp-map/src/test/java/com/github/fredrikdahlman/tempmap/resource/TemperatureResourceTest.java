@@ -33,6 +33,6 @@ class TemperatureResourceTest {
         given()
             .when().get("/api/temperatures/99999/history")
             .then()
-            .statusCode(200);
+            .statusCode(404);
     }
 }
