@@ -58,6 +58,13 @@ function App() {
           Refresh
         </button>
       </header>
+
+      <div className="marker-legend" aria-label="marker color legend">
+        <span><strong>Legend:</strong></span>
+        <span className="legend-item"><span className="legend-dot legend-yellow" /> Stale data (&gt;2h)</span>
+        <span className="legend-item"><span className="legend-dot legend-blue" /> Above 0C</span>
+        <span className="legend-item"><span className="legend-dot legend-red" /> Below 0C</span>
+      </div>
       
       {error && (
         <div className="error-message">

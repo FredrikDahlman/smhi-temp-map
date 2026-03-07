@@ -24,6 +24,7 @@ A web application that collects temperature data from SMHI's open data API and p
 - SHALL display Sweden on an interactive map centered at approximately 60°N, 15°E
 - SHALL show temperature markers for each station
 - SHALL display temperature value directly on each marker (blue for above 0°C, red for below)
+- SHALL render markers in yellow when the latest reading for a station is older than 2 hours; otherwise marker color follows temperature sign (blue above 0°C, red below 0°C)
 - SHALL display temperature value in Celsius on marker popup when clicked
 - SHALL show history graph when user clicks on a station marker
 - SHALL support manual refresh of data

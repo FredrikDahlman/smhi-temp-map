@@ -3,6 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import type { Station } from '../types';
 import { useEffect } from 'react';
+import { getMarkerColorClass } from '../utils/markerColor';
 
 interface TemperatureMapProps {
   stations: Station[];
@@ -20,7 +21,8 @@ function ChangeView({ center, zoom }: { center: [number, number]; zoom: number }
   return null;
 }
 
-function createTemperatureIcon(temperature: number | undefined) {
+function createTemperatureIcon(station: Station) {
+  const { temperature, timestamp } = station;
   if (temperature === undefined) {
     return new L.DivIcon({
       className: 'temperature-marker',
@@ -30,7 +32,7 @@ function createTemperatureIcon(temperature: number | undefined) {
     });
   }
   
-  const colorClass = temperature > 0 ? 'marker-blue' : 'marker-red';
+  const colorClass = getMarkerColorClass(temperature, timestamp);
   const displayTemp = temperature > 0 ? `+${temperature.toFixed(0)}` : temperature.toFixed(0);
   
   return new L.DivIcon({
@@ -68,6 +70,9 @@ export default function TemperatureMap({ stations, onStationClick }: Temperature
         .marker-red {
           background: #dc2626;
         }
+        .marker-yellow {
+          background: #f59e0b;
+        }
         .marker-grey {
           background: #6b7280;
         }
@@ -86,7 +91,7 @@ export default function TemperatureMap({ stations, onStationClick }: Temperature
           <Marker
             key={station.id}
             position={[station.latitude, station.longitude]}
-            icon={createTemperatureIcon(station.temperature)}
+            icon={createTemperatureIcon(station)}
             eventHandlers={{
               click: () => onStationClick(station),
             }}
@@ -101,6 +106,12 @@ export default function TemperatureMap({ stations, onStationClick }: Temperature
                       {station.temperature.toFixed(1)}°C
                     </span>
                     <br />
+                    {station.timestamp && (
+                      <>
+                        <small>Updated: {new Date(station.timestamp).toLocaleString()}</small>
+                        <br />
+                      </>
+                    )}
                     <small>Click for history</small>
                   </>
                 ) : (
