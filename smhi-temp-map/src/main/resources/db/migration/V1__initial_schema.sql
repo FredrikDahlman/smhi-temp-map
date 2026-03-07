@@ -1,3 +1,4 @@
+-- V1__initial_schema.sql
 CREATE TABLE stations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     station_id TEXT NOT NULL UNIQUE,

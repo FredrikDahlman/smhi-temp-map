@@ -6,22 +6,29 @@ import com.smhi.tempmap.entity.Reading;
 import com.smhi.tempmap.entity.Station;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import org.jboss.logging.Logger;
-
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import org.jboss.logging.Logger;
 
 @ApplicationScoped
 public class TemperatureService {
 
-    private static final Logger LOG = Logger.getLogger(TemperatureService.class);
-    private static final DateTimeFormatter ISO_FORMATTER = DateTimeFormatter.ISO_INSTANT;
+    private static final Logger LOG = Logger.getLogger(
+        TemperatureService.class
+    );
+    private static final DateTimeFormatter ISO_FORMATTER =
+        DateTimeFormatter.ISO_INSTANT;
 
     private final SmhiClient smhiClient;
+
+    @Inject
+    EntityManager entityManager;
 
     public TemperatureService(SmhiClient smhiClient) {
         this.smhiClient = smhiClient;
@@ -38,13 +45,24 @@ public class TemperatureService {
 
             for (SmhiStationData smhiData : data) {
                 try {
-                    Station station = Station.findByStationId(smhiData.stationId());
+                    Station station = Station.findByStationId(
+                        smhiData.stationId()
+                    );
                     if (station == null) {
                         station = new Station();
                         station.stationId = smhiData.stationId();
-                        station.name = smhiData.name() != null ? smhiData.name() : "Unknown";
-                        station.latitude = smhiData.latitude() != null ? smhiData.latitude() : 0.0;
-                        station.longitude = smhiData.longitude() != null ? smhiData.longitude() : 0.0;
+                        station.name =
+                            smhiData.name() != null
+                                ? smhiData.name()
+                                : "Unknown";
+                        station.latitude =
+                            smhiData.latitude() != null
+                                ? smhiData.latitude()
+                                : 0.0;
+                        station.longitude =
+                            smhiData.longitude() != null
+                                ? smhiData.longitude()
+                                : 0.0;
                         station.persist();
                     }
 
@@ -54,7 +72,11 @@ public class TemperatureService {
                     reading.timestamp = parseTimestamp(smhiData.dateTime());
                     reading.persist();
                 } catch (Exception e) {
-                    LOG.errorf("Error storing reading for station %s: %s", smhiData.stationId(), e.getMessage());
+                    LOG.errorf(
+                        "Error storing reading for station %s: %s",
+                        smhiData.stationId(),
+                        e.getMessage()
+                    );
                 }
             }
 
@@ -71,7 +93,10 @@ public class TemperatureService {
         try {
             return Instant.parse(dateTimeStr);
         } catch (DateTimeParseException e) {
-            LOG.warnf("Failed to parse timestamp: %s, using current time", dateTimeStr);
+            LOG.warnf(
+                "Failed to parse timestamp: %s, using current time",
+                dateTimeStr
+            );
             return Instant.now();
         }
     }
@@ -81,18 +106,13 @@ public class TemperatureService {
     }
 
     public List<Reading> getCurrentTemperatures() {
-        List<Station> stations = Station.listAll();
-        List<Reading> result = new ArrayList<>();
-        
-        for (Station station : stations) {
-            Reading latestReading = Reading.find("station.id = ?1 ORDER BY timestamp DESC", station.id)
-                .firstResult();
-            if (latestReading != null) {
-                result.add(latestReading);
-            }
-        }
-        
-        return result;
+        return entityManager
+            .createQuery(
+                "SELECT r FROM Reading r WHERE r.id IN " +
+                "(SELECT MAX(r2.id) FROM Reading r2 GROUP BY r2.station.id)",
+                Reading.class
+            )
+            .getResultList();
     }
 
     public List<Reading> getTemperatureHistory(Long stationId, int hours) {

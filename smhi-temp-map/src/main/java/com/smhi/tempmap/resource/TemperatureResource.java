@@ -7,6 +7,7 @@ import com.smhi.tempmap.entity.Station;
 import com.smhi.tempmap.service.TemperatureService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -42,9 +43,11 @@ public class TemperatureResource {
     @Path("/temperatures/{stationId}/history")
     public TemperatureHistoryDto getTemperatureHistory(
             @PathParam("stationId") Long stationId) {
-        List<Reading> readings = temperatureService.getTemperatureHistory(stationId, 24);
         Station station = Station.findById(stationId);
-        String stationName = station != null ? station.name : "Unknown";
-        return TemperatureHistoryDto.from(stationId, stationName, readings);
+        if (station == null) {
+            throw new NotFoundException("Station not found: " + stationId);
+        }
+        List<Reading> readings = temperatureService.getTemperatureHistory(stationId, 24);
+        return TemperatureHistoryDto.from(stationId, station.name, readings);
     }
 }
